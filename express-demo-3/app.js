@@ -1,6 +1,8 @@
 const express = require('express');
 const app = express();
 const fn1 = require('./fn1')
+const user = require('./routers/user');
+
 app.set('case sensitive routing', true);
 app.set('views', 'frank')
 // app.set('view engine', 'pug')
@@ -14,6 +16,8 @@ app.use(express.urlencoded())
 
 // app.use(fn1)
 
+app.use('/users', user)
+
 app.get('/users/:id', (request, response, next) => {
   console.log('request.params')
   console.log(request.params)
@@ -21,16 +25,43 @@ app.get('/users/:id', (request, response, next) => {
   next()
 })
 
-
-
-app.get('/test', function(req, res) {
-  res.render('test', {
-    pageTitle: "方方"
-  })
+app.get('/test', function(req, res, next) {
+  // res.status(301)
+  // res.location('/frank')
+  res.redirect('frank')
+  res.end()
+  next()
 })
 
-app.get('/test', function(req, res) {
-  res.send('style.css')
+app.get('/frank', function(req, res) {
+  res.send('frank')
+})
+
+// app.get('/test', function(req, res) {
+//   res.render('test', {
+//     pageTitle: "方方"
+//   })
+// })
+
+app.get('/test1', function(req, res) {
+  res.format({
+    'text/plain': function () {
+      res.send('hey')
+    },
+  
+    'text/html': function () {
+      res.send('<p>hey</p>')
+    },
+  
+    'application/json': function () {
+      res.send({ message: 'hey' })
+    },
+  
+    default: function () {
+      // log the request and respond with 406
+      res.status(406).send('Not Acceptable')
+    }
+  })
 })
 
 app.post('/test', function(req, res) {
